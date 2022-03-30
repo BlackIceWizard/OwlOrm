@@ -1,0 +1,25 @@
+{
+    "name": "river-ring/owl-orm",
+    "type": "library",
+    "description": "composer.json",
+    "keywords": [
+        "orm",
+        "ddd",
+        "aggregate root",
+        "entity",
+        "embedded"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "ext-pdo": "*",
+        "ramsey/uuid": "^4.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "RiverRing\\OwlOrm\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
