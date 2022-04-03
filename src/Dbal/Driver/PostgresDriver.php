@@ -4,32 +4,25 @@ declare(strict_types=1);
 namespace RiverRing\OwlOrm\Dbal\Driver;
 
 use Exception;
+use InvalidArgumentException;
 use Iterator;
 use JetBrains\PhpStorm\Pure;
-use RiverRing\OwlOrm\PdoProvider;
+use RiverRing\OwlOrm\Dbal\Pdo\LazyPdoProvider;
 use RiverRing\OwlOrm\Repository\DbRepresentation\Record;
 use RiverRing\OwlOrm\Repository\DbRepresentation\RecordStatus;
 use PDO;
 
-class PostgresDriver implements Driver
+final class PostgresDriver extends AbstractDriver
 {
-    private PDO $pdo;
-
-    #[Pure]
-    public function __construct(PdoProvider $pdoProvider)
-    {
-        $this->pdo = $pdoProvider->provide();
-    }
-
     public function execute($sql, $params = []): void
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo()->prepare($sql);
         $stmt->execute($params);
     }
 
     public function findOne($sql, $params = []): ?array
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo()->prepare($sql);
         $stmt->execute($params);
 
         if ($row = $stmt->fetch()) {
@@ -41,7 +34,7 @@ class PostgresDriver implements Driver
 
     public function find($sql, $params = []): Iterator
     {
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo()->prepare($sql);
         $stmt->execute($params);
 
         return $stmt->getIterator();
@@ -51,7 +44,7 @@ class PostgresDriver implements Driver
     {
         return $this->find(
             sprintf(
-                'SELECT * FROM %s where %s = :aggregate_root_id',
+                'SELECT * FROM "%s" where "%s" = :aggregate_root_id',
                 $entityTable,
                 $referencedFieldName
             ),
@@ -63,7 +56,7 @@ class PostgresDriver implements Driver
     {
         return $this->findOne(
             sprintf(
-                'SELECT * FROM %s where %s = :aggregate_root_id limit 1',
+                'SELECT * FROM "%s" where "%s" = :aggregate_root_id limit 1',
                 $entityTable,
                 $referencedFieldName
             ),
@@ -73,17 +66,17 @@ class PostgresDriver implements Driver
 
     public function transactional(callable $operation): void
     {
-        $this->pdo->beginTransaction();
+        $this->pdo()->beginTransaction();
 
         try {
             $operation();
         } catch (Exception $e) {
-            $this->pdo->rollBack();
+            $this->pdo()->rollBack();
 
             throw $e;
         }
 
-        $this->pdo->commit();
+        $this->pdo()->commit();
     }
 
     public function store(string $table, string $primaryKeyField, Record $record): void
@@ -95,6 +88,8 @@ class PostgresDriver implements Driver
             case RecordStatus::Changed:
                 $this->updateExisting($table, $primaryKeyField, $record->data());
                 break;
+            default:
+                throw new InvalidArgumentException(sprintf('Unexpected record status %s', $record->status()->name));
         }
     }
 

@@ -16,7 +16,7 @@ use RiverRing\OwlOrm\Specification\PluralEntitySpecification;
 use RiverRing\OwlOrm\Specification\SingleEntitySpecification;
 use RuntimeException;
 
-class Dumper
+final class Dumper
 {
     private MapperRegistry $mappers;
 

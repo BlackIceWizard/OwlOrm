@@ -5,6 +5,7 @@ namespace RiverRing\OwlOrm\Repository;
 
 use InvalidArgumentException;
 use Iterator;
+use JetBrains\PhpStorm\Pure;
 use RiverRing\OwlOrm\Aggregator;
 use RiverRing\OwlOrm\Dbal\Driver\Driver;
 use RiverRing\OwlOrm\Dumper;
@@ -25,6 +26,7 @@ abstract class Repository
     private Aggregator $aggregator;
     private Dumper $dumper;
 
+    #[Pure]
     public function __construct(Driver $driver, MapperRegistry $mappers)
     {
         $this->driver = $driver;

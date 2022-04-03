@@ -15,11 +15,23 @@
         "ext-pdo": "*",
         "ramsey/uuid": "^4.2"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
             "RiverRing\\OwlOrm\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RiverRing\\OwlOrm\\Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+
+    "scripts": {
+        "phpunit": "vendor/phpunit/phpunit/phpunit"
+    }
 }
